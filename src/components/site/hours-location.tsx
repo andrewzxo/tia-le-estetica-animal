@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, Phone, CalendarX, Clock3, QrCode, CreditCard, Banknote, Wallet } from 'lucide-react'
+import { MapPin, Phone, CalendarX, Clock3, QrCode, CreditCard, Banknote, Wallet, Navigation } from 'lucide-react'
 import { minToHHMM, weekdayNamePt, formatDateBR } from '@/lib/time'
 import type { PublicSettings, WorkingHoursType, ExceptionType } from '@/lib/public-types'
 import { WhatsAppIcon } from './icons'
@@ -162,6 +162,18 @@ export function HoursLocationSection({
                   </a>
                 )}
               </div>
+
+              {settings.address && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-bronze-soft underline-offset-4 transition hover:text-paper hover:underline"
+                >
+                  <Navigation className="h-4 w-4" aria-hidden="true" />
+                  Como chegar — abrir no Google Maps
+                </a>
+              )}
             </div>
 
             {settings.address && mapSrc && (

@@ -14,6 +14,7 @@ import { GallerySection } from '@/components/site/gallery'
 import { TipSection, TipTosaSection } from '@/components/site/tip'
 import { TestimonialsSection } from '@/components/site/testimonials'
 import { ImportantNoticeSection } from '@/components/site/important-notice'
+import { FaqSection } from '@/components/site/faq'
 import { HoursLocationSection, groupHours } from '@/components/site/hours-location'
 import { SiteFooter } from '@/components/site/footer'
 import { FloatingWhatsApp } from '@/components/site/floating-whatsapp'
@@ -119,6 +120,8 @@ export default function PublicHomePage() {
         <TestimonialsSection testimonials={data.testimonials} />
 
         <ImportantNoticeSection />
+
+        <FaqSection />
 
         <HoursLocationSection
           settings={data.settings}

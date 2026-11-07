@@ -12,6 +12,7 @@ import {
   SITE_INSTAGRAM_URL,
   SITE_WHATSAPP,
 } from "@/lib/site-url";
+import { FAQ_ITEMS } from "@/lib/faq-data";
 
 const instrument = Instrument_Sans({
   variable: "--font-sans-instrument",
@@ -26,6 +27,8 @@ const fraunces = Fraunces({
 
 const OG_IMAGE = "/uploads/og-tia-le.png";
 const OG_IMAGE_ALT = "Tia Lê Estética Animal — banho, tosa e estética animal";
+const SITE_ADDRESS_FULL =
+  "Rua Eduardo Monfardini, 16 - Vila São Pedro, Espírito Santo do Pinhal - SP, 13990-000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -116,6 +119,17 @@ const jsonLd = {
   priceRange: "R$ 25 - R$ 110",
   currenciesAccepted: "BRL",
   paymentAccepted: "PIX, Cartão de crédito, Cartão de débito, Dinheiro",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Rua Eduardo Monfardini, 16",
+    addressLocality: "Espírito Santo do Pinhal",
+    addressRegion: "SP",
+    postalCode: "13990-000",
+    addressCountry: "BR",
+  },
+  hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    SITE_ADDRESS_FULL
+  )}`,
   sameAs: [SITE_INSTAGRAM_URL],
   contactPoint: {
     "@type": "ContactPoint",
@@ -157,6 +171,17 @@ const jsonLd = {
       },
       itemOffered: { "@type": "Service", name: s.name, serviceType: "Banho e tosa" },
     })),
+    ...[
+      { name: "Tosa da Raça", desc: "Tosa seguindo o padrão oficial da raça do seu pet — poodle, schnauzer, shih tzu e outras — com técnica e acabamento fino." },
+      { name: "Cardagem", desc: "Remoção do subpelo morto com cardadeira profissional: reduz a queda em casa e deixa o pelo leve." },
+      { name: "Corte de Unhas e Limpeza de Ouvidos", desc: "Unhas aparadas na medida certa e ouvidinhos limpos com cuidado." },
+      { name: "Escovação Dental", desc: "Higiene bucal com escova e pasta própria para pets — reduz o mau hálito e cuida de dentes e gengivas." },
+    ].map((s) => ({
+      "@type": "Offer",
+      name: s.name,
+      description: s.desc,
+      itemOffered: { "@type": "Service", name: s.name, serviceType: "Banho e tosa" },
+    })),
     {
       "@type": "Offer",
       name: "Táxi dog (adicional)",
@@ -169,6 +194,17 @@ const jsonLd = {
       itemOffered: { "@type": "Service", name: "Táxi dog", serviceType: "Transporte de animais" },
     },
   ],
+};
+
+/** Perguntas frequentes em dados estruturados (FAQPage) para o Google */
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
 };
 
 export default function RootLayout({
@@ -184,6 +220,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
         {children}
         <GoogleAnalytics />

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '#servicos', label: 'Serviços' },
   { href: '#galeria', label: 'Galeria' },
   { href: '#depoimentos', label: 'Depoimentos' },
+  { href: '#faq', label: 'Dúvidas' },
   { href: '#contato', label: 'Contato' },
 ]
 

@@ -1,13 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { Heart, BadgeCheck, HeartHandshake, ShieldCheck } from 'lucide-react'
+import { Heart, BadgeCheck, HeartHandshake, ShieldCheck, Baby } from 'lucide-react'
 import { Reveal } from './reveal'
 
 const HIGHLIGHTS = [
   { icon: BadgeCheck, text: 'Produtos premium, seguros para pele e pelagem' },
-  { icon: HeartHandshake, text: 'Atendimento individualizado, sem pressa' },
-  { icon: ShieldCheck, text: 'Ambiente higienizado, tranquilo e seguro' },
+  { icon: HeartHandshake, text: 'Atendimento individualizado, sem pressa e sem estresse' },
+  { icon: Baby, text: 'Cuidado especial com filhotes e pets idosos' },
+  { icon: ShieldCheck, text: 'Espaço higienizado, tranquilo e seguro' },
 ]
 
 export function AboutSection({
@@ -79,6 +80,11 @@ export function AboutSection({
               </li>
             ))}
           </ul>
+
+          <p className="mt-6 max-w-md text-[0.9rem] leading-relaxed text-ink/60">
+            Do primeiro banho do filhote ao cuidado delicado com os mais experientes, o espaço foi
+            pensado para que cada visita seja uma experiência <strong className="font-semibold text-ink">relaxante, sem estresse</strong> — do começo ao fim.
+          </p>
 
           <p className="font-display mt-7 inline-flex items-center gap-2 text-[0.95rem] italic text-ink/50">
             <Heart className="h-3.5 w-3.5 fill-bronze text-bronze" aria-hidden="true" />

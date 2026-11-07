@@ -6,16 +6,20 @@ O site oficial permite **agendar online** em poucos passos: escolha do serviço 
 
 ## Serviços e valores (a partir de)
 
-| Serviço         | Duração | A partir de |
-|-----------------|---------|-------------|
-| Banho Simples   | 60 min  | R$ 50,00    |
-| Tosa Higiênica  | 45 min  | R$ 40,00    |
-| Tosa na Máquina | 60 min  | R$ 45,00    |
-| Tosa na Tesoura | 90 min  | R$ 70,00    |
-| Hidratação      | 30 min  | R$ 30,00    |
-| Desembolo       | 30 min  | R$ 25,00    |
+| Serviço                             | Duração | Valor       |
+|-------------------------------------|---------|-------------|
+| Banho Simples                       | 60 min  | R$ 50,00    |
+| Tosa Higiênica                      | 45 min  | R$ 40,00    |
+| Tosa na Máquina                     | 60 min  | R$ 45,00    |
+| Tosa na Tesoura                     | 90 min  | R$ 70,00    |
+| Tosa da Raça (padrão oficial)       | 120 min | Sob consulta |
+| Hidratação                          | 30 min  | R$ 30,00    |
+| Desembolo                           | 30 min  | R$ 25,00    |
+| Cardagem (remoção de subpelo)       | 45 min  | Sob consulta |
+| Corte de Unhas e Limpeza de Ouvidos | 20 min  | Sob consulta |
+| Escovação Dental (higiene bucal)    | 25 min  | Sob consulta |
 
-Os valores variam conforme o porte do pet (pequeno, médio, grande) e espécie (cão/gato). Atendemos cães e gatos.
+Os valores variam conforme o porte do pet (pequeno, médio, grande) e espécie (cão/gato). Atendemos cães e gatos. A hidratação inclui banhos terapêuticos para pelagem e pele.
 
 **Táxi dog (adicional opcional):** R$ 10,00 (buscar e levar). No agendamento online, o cliente marca a opção "Táxi dog" na etapa de escolha do serviço, e o valor é somado ao total.
 
@@ -33,6 +37,24 @@ Não marcamos pagamento antecipado. Pagamentos de pacotes devem ser feitos no di
 - Sábado: 09h às 17h
 - Domingo: fechado
 
+## Endereço
+
+Rua Eduardo Monfardini, 16 - Vila São Pedro, Espírito Santo do Pinhal - SP, 13990-000
+
+## Informações importantes
+
+- Atendimento com hora marcada (recomenda-se agendar com 1 a 2 dias de antecedência).
+- Pedimos carteira de vacinação em dia (V8/V10 para cães e V4/V5 para gatos) e vermifugação recente.
+- Não atendemos cães com comportamento agressivo ou que estejam com pulgas e carrapatos (segurança, higiene e bem-estar dos animais).
+- Cuidado especial com filhotes e pets idosos: atendimento sem estresse, com ritmo respeitado.
+
+## Perguntas frequentes
+
+- Preciso agendar com antecedência? Sim, atendemos com hora marcada; agende pelo site ou WhatsApp.
+- Vacinação precisa estar em dia? Sim (V8/V10 cães, V4/V5 gatos) para proteger todos os pets.
+- Frequência recomendada? Pelos curtos: a cada 30–45 dias; pelos médios/longos: a cada 15–21 dias; gatos: a cada 1–2 meses.
+- Táxi dog? Marque a opção no agendamento: R$ 10,00 buscar e levar, para qualquer serviço.
+
 ## Contato
 
 - Site: https://tialeesteticaanimal.com.br
@@ -44,4 +66,5 @@ Não marcamos pagamento antecipado. Pagamentos de pacotes devem ser feitos no di
 - Início e agendamento: https://tialeesteticaanimal.com.br/
 - Serviços (âncora): https://tialeesteticaanimal.com.br/#servicos
 - Portfólio/galeria (âncora): https://tialeesteticaanimal.com.br/#galeria
+- Perguntas frequentes (âncora): https://tialeesteticaanimal.com.br/#faq
 - Contato e horários (âncora): https://tialeesteticaanimal.com.br/#contato
