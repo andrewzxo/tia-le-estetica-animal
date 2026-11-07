@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { ImportantNoticeInline } from '@/components/site/important-notice'
 import {
   PawPrint,
   Dog,
@@ -876,6 +877,8 @@ export function BookingDialog({
               {/* Etapa 5 — Confirmação */}
               {step === 5 && service && date && time != null && (
                 <div className="space-y-4">
+                  <ImportantNoticeInline />
+
                   <div className="rounded-xl bg-ink p-5 texture-grain">
                     <p className="font-display text-lg font-semibold text-paper">
                       {service.name}

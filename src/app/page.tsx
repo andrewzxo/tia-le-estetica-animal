@@ -13,6 +13,7 @@ import { WhySection } from '@/components/site/why'
 import { GallerySection } from '@/components/site/gallery'
 import { TipSection, TipTosaSection } from '@/components/site/tip'
 import { TestimonialsSection } from '@/components/site/testimonials'
+import { ImportantNoticeSection } from '@/components/site/important-notice'
 import { HoursLocationSection, groupHours } from '@/components/site/hours-location'
 import { SiteFooter } from '@/components/site/footer'
 import { FloatingWhatsApp } from '@/components/site/floating-whatsapp'
@@ -116,6 +117,8 @@ export default function PublicHomePage() {
         <TipSection instagram={data.settings.instagram} />
 
         <TestimonialsSection testimonials={data.testimonials} />
+
+        <ImportantNoticeSection />
 
         <HoursLocationSection
           settings={data.settings}
