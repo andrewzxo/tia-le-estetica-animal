@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Service {
+  id             String        @id @default(cuid())
+  name           String
+  description    String        @default("")
+  durationMin    Int
+  priceOnConsult Boolean       @default(false)
+  basePrice      Float         @default(0)
+  smallPrice     Float?
+  mediumPrice    Float?
+  largePrice     Float?
+  catPrice       Float?
+  species        String        @default("AMBOS")
+  imageUrl       String?
+  active         Boolean       @default(true)
+  isExample      Boolean       @default(false)
+  sortOrder      Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  appointments   Appointment[]
+}
+
+model Customer {
+  id           String        @id @default(cuid())
+  name         String
+  phone        String        @unique
+  email        String?
+  notes        String        @default("")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  pets         Pet[]
+  appointments Appointment[]
+}
+
+model Pet {
+  id           String        @id @default(cuid())
+  customerId   String
+  name         String
+  species      String
+  breed        String        @default("")
+  size         String        @default("PEQUENO")
+  notes        String        @default("")
+  createdAt    DateTime      @default(now())
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+}
+
+model Appointment {
+  id            String    @id @default(cuid())
+  serviceId     String
+  customerId    String
+  petId         String
+  date          String
+  startMin      Int
+  endMin        Int
+  price         Float
+  status        String    @default("PENDENTE")
+  petNotes      String    @default("")
+  paymentInfo   String    @default("")
+  internalNotes String    @default("")
+  taxiDog       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  service       Service   @relation(fields: [serviceId], references: [id])
+  customer      Customer  @relation(fields: [customerId], references: [id])
+  pet           Pet       @relation(fields: [petId], references: [id])
+
+  @@index([date])
+}
+
+model WorkingHours {
+  id              String  @id @default(cuid())
+  weekday         Int     @unique
+  enabled         Boolean @default(true)
+  openMin         Int
+  closeMin        Int
+  lunchStartMin   Int?
+  lunchEndMin     Int?
+  slotIntervalMin Int     @default(30)
+  gapMin          Int     @default(0)
+  capacity        Int     @default(1)
+}
+
+model ScheduleException {
+  id        String   @id @default(cuid())
+  date      String   @unique
+  type      String   @default("FECHADO")
+  startMin  Int?
+  endMin    Int?
+  reason    String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  kind      String   @default("FOTO")
+  imageUrl  String?
+  beforeUrl String?
+  afterUrl  String?
+  caption   String   @default("")
+  visible   Boolean  @default(true)
+  isExample Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id           String   @id @default(cuid())
+  customerName String
+  petName      String   @default("")
+  text         String
+  rating       Int      @default(5)
+  visible      Boolean  @default(true)
+  isExample    Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model SiteSettings {
+  id                String   @id @default("main")
+  businessName      String   @default("Pet Banho e Tosa da Lê")
+  logoUrl           String?
+  phone             String   @default("")
+  whatsapp          String   @default("")
+  address           String   @default("")
+  instagram         String   @default("")
+  facebook          String   @default("")
+  heroTitle         String   @default("")
+  heroSubtitle      String   @default("")
+  heroImageUrl      String?
+  aboutTitle        String   @default("")
+  aboutText         String   @default("")
+  hoursNote         String   @default("")
+  waBookingTemplate String   @default("")
+  sessionSecret     String   @default("")
+  updatedAt         DateTime @updatedAt
+}

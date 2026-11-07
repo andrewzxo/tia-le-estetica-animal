@@ -1,0 +1,47 @@
+# Tia Lê Estética Animal
+
+> Banho, tosa e estética animal para cães e gatos, com agendamento online pelo site e táxi dog (buscar e levar) como adicional de R$ 10,00 para qualquer serviço. Conhecida também como "Lê bicho mimado BANHO E TOSA".
+
+O site oficial permite **agendar online** em poucos passos: escolha do serviço → dados do pet → data → horário → confirmação pelo WhatsApp. O agendamento fica como "aguardando confirmação" e é finalizado pela equipe no WhatsApp.
+
+## Serviços e valores (a partir de)
+
+| Serviço         | Duração | A partir de |
+|-----------------|---------|-------------|
+| Banho Simples   | 60 min  | R$ 50,00    |
+| Tosa Higiênica  | 45 min  | R$ 40,00    |
+| Tosa na Máquina | 60 min  | R$ 45,00    |
+| Tosa na Tesoura | 90 min  | R$ 70,00    |
+| Hidratação      | 30 min  | R$ 30,00    |
+| Desembolo       | 30 min  | R$ 25,00    |
+
+Os valores variam conforme o porte do pet (pequeno, médio, grande) e espécie (cão/gato). Atendemos cães e gatos.
+
+**Táxi dog (adicional opcional):** R$ 10,00 (buscar e levar). No agendamento online, o cliente marca a opção "Táxi dog" na etapa de escolha do serviço, e o valor é somado ao total.
+
+## Formas de pagamento
+
+- PIX (pagamento no dia do atendimento, com envio do comprovante no WhatsApp)
+- Cartão de crédito e débito (na entrega do pet; parcelamos com juros da maquininha)
+- Dinheiro (na entrega do pet; informe se precisa de troco)
+
+Não marcamos pagamento antecipado. Pagamentos de pacotes devem ser feitos no dia do vencimento.
+
+## Horário de funcionamento
+
+- Segunda a sexta: 09h às 18h (pausa de almoço 12h às 13h)
+- Sábado: 09h às 17h
+- Domingo: fechado
+
+## Contato
+
+- Site: https://tialeesteticaanimal.com.br
+- WhatsApp: (19) 98904-4489 — https://wa.me/5519989044489
+- Instagram: @tiale.esteticaanimal — https://instagram.com/tiale.esteticaanimal
+
+## Principais páginas do site
+
+- Início e agendamento: https://tialeesteticaanimal.com.br/
+- Serviços (âncora): https://tialeesteticaanimal.com.br/#servicos
+- Portfólio/galeria (âncora): https://tialeesteticaanimal.com.br/#galeria
+- Contato e horários (âncora): https://tialeesteticaanimal.com.br/#contato
