@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ImportantNoticeInline } from '@/components/site/important-notice'
+import { waLink } from '@/lib/whatsapp'
+import { SITE_WHATSAPP } from '@/lib/site-url'
 import {
   PawPrint,
   Dog,
@@ -346,10 +348,11 @@ export function BookingDialog({
         return
       }
       setResult(data as BookingResult)
-      // Abre o WhatsApp automaticamente
-      if (data.waLink) {
-        window.open(data.waLink, '_blank', 'noopener,noreferrer')
-      }
+      // Redirecionamento OBRIGATÓRIO para o WhatsApp com o pedido pronto.
+      // Usamos navegação na própria aba (location.assign): não é bloqueado por
+      // bloqueadores de pop-up e funciona em celular (app) e desktop (WhatsApp Web).
+      const wa = data.waLink || waLink(SITE_WHATSAPP, data.message || '')
+      window.location.assign(wa)
     } catch {
       setError('Falha de conexão. Verifique sua internet e tente novamente.')
     } finally {
@@ -408,8 +411,8 @@ export function BookingDialog({
             </h3>
             <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink/65">
               Seu agendamento de <strong>{result.resume.serviceName}</strong> foi registrado e está{' '}
-              <strong>aguardando confirmação</strong>. Agora é só aguardar a nossa confirmação no
-              WhatsApp!
+              <strong>aguardando confirmação</strong>. Abrimos o WhatsApp com o seu pedido pronto —
+              <strong> envie a mensagem</strong> para completarmos a confirmação!
             </p>
             <div className="mx-auto mt-5 max-w-sm rounded-xl bg-paper-deep/70 p-4 text-left text-sm text-ink/80 ring-1 ring-ink/10">
               <p>

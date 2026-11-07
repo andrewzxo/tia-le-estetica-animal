@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { computeDayAvailability } from '@/lib/availability'
 import { todayISO, minToHHMM, weekdayNamePt, weekdayFromISO, formatDateBR } from '@/lib/time'
 import { buildBookingMessage, waLink } from '@/lib/whatsapp'
+import { SITE_WHATSAPP } from '@/lib/site-url'
 import { phoneDigits, maskPhoneBR } from '@/lib/format'
 
 type BookingBody = {
@@ -214,8 +215,8 @@ export async function POST(req: NextRequest) {
       taxiDog,
     })
 
-    const whatsapp = settings?.whatsapp || ''
-    const link = whatsapp ? waLink(whatsapp, message) : null
+    const whatsapp = settings?.whatsapp || SITE_WHATSAPP
+    const link = waLink(whatsapp, message)
 
     return NextResponse.json({
       id: appointment.id,
