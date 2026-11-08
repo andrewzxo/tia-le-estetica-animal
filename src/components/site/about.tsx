@@ -28,11 +28,11 @@ export function AboutSection({
         {/* Composição de fotos sobrepostas */}
         <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:max-w-none">
           <div className="relative">
-            {/* Foto grande — placa real da loja */}
+            {/* Foto grande — atendimento profissional */}
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-paper-deep shadow-xl shadow-ink/10 ring-1 ring-ink/5">
               <Image
-                src="/uploads/tia-le-placa.webp"
-                alt={`Placa da ${businessName} na fachada da loja`}
+                src="/uploads/hero-groomer.webp"
+                alt={`Profissional cuidando com carinho de um pet no ${businessName}`}
                 fill
                 sizes="(max-width: 1024px) 90vw, 45vw"
                 className="object-cover"
