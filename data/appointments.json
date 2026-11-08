@@ -1,38 +1,3 @@
 {
-  "appointments": [
-    {
-      "serviceId": "cmw1dqyxw0008pw3wwo5ka5l8",
-      "customerId": "cmw7xivbz0000m7wh6rmej8kg",
-      "petId": "cmw7xivc20002m7wh9ym2nlsu",
-      "date": "2026-11-09",
-      "startMin": 540,
-      "endMin": 600,
-      "price": 50,
-      "status": "PENDENTE",
-      "petNotes": "teste automatizado",
-      "paymentInfo": "PIX",
-      "internalNotes": "",
-      "taxiDog": false,
-      "service": {
-        "id": "cmw1dqyxw0008pw3wwo5ka5l8",
-        "name": "Banho Simples",
-        "durationMin": 60
-      },
-      "pet": {
-        "id": "cmw7xivc20002m7wh9ym2nlsu",
-        "name": "Rex",
-        "species": "CAO",
-        "breed": "Poodle",
-        "size": "PEQUENO"
-      },
-      "customer": {
-        "id": "cmw7xivbz0000m7wh6rmej8kg",
-        "name": "Teste E2E",
-        "phone": "19999990001"
-      },
-      "id": "bk_daad8bcb6b6b4ef2a30b",
-      "createdAt": "2026-11-08T14:30:15.842Z",
-      "updatedAt": "2026-11-08T14:30:15.842Z"
-    }
-  ]
+  "appointments": []
 }
