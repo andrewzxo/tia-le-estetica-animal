@@ -56,6 +56,8 @@ server.log
 # Banco local com dados reais (NÃO vai pro git; vai só o snapshot limpo db/seed.db)
 db/custom.db
 db/*.db-journal
+# Agendamentos locais de desenvolvimento (em produção: data/appointments.json no repo)
+db/bookings.json
 # Pastas locais do ambiente de desenvolvimento
 .zscripts
 .backup-original-images

@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { computeDayAvailability } from '@/lib/availability'
+import { activeAppointmentsForDate } from '@/lib/bookings'
 import { todayISO } from '@/lib/time'
 
 /**
  * Disponibilidade de um dia específico para um serviço.
  * GET /api/public/availability?date=YYYY-MM-DD&serviceId=xxx
+ *
+ * Considera agendamentos já feitos por qualquer pessoa (armazenamento
+ * persistente) — horários ocupados aparecem indisponíveis.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -25,14 +29,7 @@ export async function GET(req: NextRequest) {
     const [workingHours, exceptions, activeAppointments] = await Promise.all([
       db.workingHours.findMany(),
       db.scheduleException.findMany({ where: { date } }),
-      db.appointment.findMany({
-        where: {
-          date,
-          status: { in: ['PENDENTE', 'CONFIRMADO'] },
-          ...(excludeId ? { id: { not: excludeId } } : {}),
-        },
-        select: { id: true, startMin: true, endMin: true },
-      }),
+      activeAppointmentsForDate(date, excludeId || undefined),
     ])
 
     const availability = computeDayAvailability({

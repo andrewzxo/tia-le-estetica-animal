@@ -165,6 +165,13 @@ export function BookingDialog({
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BookingResult | null>(null)
 
+  // Ao exibir um erro, rola até a mensagem (fica invisível no mobile quando
+  // a lista de opções é longa — ex.: formas de pagamento na etapa 5)
+  useEffect(() => {
+    if (!error) return
+    document.getElementById('bk-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [error])
+
   const service = useMemo(() => services.find((s) => s.id === serviceId) ?? null, [services, serviceId])
   const today = todayISO()
 
@@ -387,8 +394,8 @@ export function BookingDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto custom-scrollbar max-w-lg sm:max-w-xl rounded-2xl p-0 gap-0">
-        <DialogHeader className="border-b border-ink/8 bg-paper-deep/60 px-6 pb-5 pt-6">
+      <DialogContent className="flex max-h-[92dvh] w-full flex-col overflow-hidden max-w-lg sm:max-w-xl rounded-2xl p-0 gap-0">
+        <DialogHeader className="shrink-0 border-b border-ink/8 bg-paper-deep/60 px-6 pb-5 pt-6">
           <DialogTitle className="font-display flex items-center gap-3 text-xl font-semibold text-ink-deep">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-paper">
               <PawPrint className="h-4.5 w-4.5" aria-hidden="true" />
@@ -402,6 +409,7 @@ export function BookingDialog({
 
         {result ? (
           /* ── Tela de sucesso ─────────────────────────────────── */
+          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto">
           <div className="px-6 py-8 text-center">
             <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-bronze/15 text-bronze">
               <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
@@ -459,10 +467,11 @@ export function BookingDialog({
               </Button>
             </div>
           </div>
+          </div>
         ) : (
           <>
             {/* ── Indicador de etapas ───────────────────────────── */}
-            <div className="border-b border-ink/8 px-6 py-4">
+            <div className="shrink-0 border-b border-ink/8 px-6 py-4">
               <ol className="flex items-center justify-between">
                 {STEP_LABELS.map((label, i) => {
                   const n = i + 1
@@ -506,8 +515,8 @@ export function BookingDialog({
               </ol>
             </div>
 
-            {/* ── Conteúdo da etapa ─────────────────────────────── */}
-            <div className="px-6 py-5">
+            {/* ── Conteúdo da etapa (com rolagem própria) ───────── */}
+            <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-5">
               {/* Etapa 1 — Serviço */}
               {step === 1 && (
                 <div className="space-y-3">
@@ -1025,6 +1034,7 @@ export function BookingDialog({
 
               {error && (
                 <p
+                  id="bk-error"
                   className="mt-4 flex items-start gap-2 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-600 ring-1 ring-red-100"
                   role="alert"
                 >
@@ -1034,8 +1044,8 @@ export function BookingDialog({
               )}
             </div>
 
-            {/* ── Rodapé do diálogo ─────────────────────────────── */}
-            <div className="flex items-center justify-between gap-3 border-t border-ink/8 px-6 py-4">
+            {/* ── Rodapé fixo do diálogo (sempre visível) ───────── */}
+            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-ink/8 bg-paper px-6 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
               <Button
                 variant="ghost"
                 onClick={goBack}

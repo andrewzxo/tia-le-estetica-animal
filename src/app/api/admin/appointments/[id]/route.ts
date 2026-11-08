@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { withAdmin } from '@/lib/api'
 import { computeDayAvailability } from '@/lib/availability'
+import { findBooking, updateBooking, deleteBooking, activeAppointmentsForDate } from '@/lib/bookings'
 import { todayISO } from '@/lib/time'
 
 type PatchBody = {
@@ -11,7 +12,7 @@ type PatchBody = {
   startMin?: number
 }
 
-/** Ações administrativas sobre um agendamento */
+/** Ações administrativas sobre um agendamento (armazenamento persistente) */
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -20,10 +21,7 @@ export async function PATCH(
     const { id } = await params
     const body = (await req.json()) as PatchBody
 
-    const appointment = await db.appointment.findUnique({
-      where: { id },
-      include: { service: true },
-    })
+    const appointment = await findBooking(id)
     if (!appointment) {
       return NextResponse.json({ error: 'Agendamento não encontrado.' }, { status: 404 })
     }
@@ -36,11 +34,7 @@ export async function PATCH(
             { status: 400 }
           )
         }
-        const updated = await db.appointment.update({
-          where: { id },
-          data: { status: 'CONFIRMADO' },
-          include: { service: true, pet: true, customer: true },
-        })
+        const updated = await updateBooking(id, { status: 'CONFIRMADO' })
         return NextResponse.json({ appointment: updated })
       }
 
@@ -51,11 +45,7 @@ export async function PATCH(
             { status: 400 }
           )
         }
-        const updated = await db.appointment.update({
-          where: { id },
-          data: { status: 'RECUSADO' },
-          include: { service: true, pet: true, customer: true },
-        })
+        const updated = await updateBooking(id, { status: 'RECUSADO' })
         return NextResponse.json({ appointment: updated })
       }
 
@@ -66,11 +56,7 @@ export async function PATCH(
             { status: 400 }
           )
         }
-        const updated = await db.appointment.update({
-          where: { id },
-          data: { status: 'CANCELADO' },
-          include: { service: true, pet: true, customer: true },
-        })
+        const updated = await updateBooking(id, { status: 'CANCELADO' })
         return NextResponse.json({ appointment: updated })
       }
 
@@ -81,19 +67,13 @@ export async function PATCH(
             { status: 400 }
           )
         }
-        const updated = await db.appointment.update({
-          where: { id },
-          data: { status: 'CONCLUIDO' },
-          include: { service: true, pet: true, customer: true },
-        })
+        const updated = await updateBooking(id, { status: 'CONCLUIDO' })
         return NextResponse.json({ appointment: updated })
       }
 
       case 'notes': {
-        const updated = await db.appointment.update({
-          where: { id },
-          data: { internalNotes: (body.internalNotes || '').trim() },
-          include: { service: true, pet: true, customer: true },
+        const updated = await updateBooking(id, {
+          internalNotes: (body.internalNotes || '').trim(),
         })
         return NextResponse.json({ appointment: updated })
       }
@@ -114,10 +94,7 @@ export async function PATCH(
         const [workingHours, exceptions, activeAppointments] = await Promise.all([
           db.workingHours.findMany(),
           db.scheduleException.findMany({ where: { date } }),
-          db.appointment.findMany({
-            where: { date, status: { in: ['PENDENTE', 'CONFIRMADO'] }, id: { not: id } },
-            select: { id: true, startMin: true, endMin: true },
-          }),
+          activeAppointmentsForDate(date, id),
         ])
 
         const day = computeDayAvailability({
@@ -135,15 +112,11 @@ export async function PATCH(
           )
         }
 
-        const updated = await db.appointment.update({
-          where: { id },
-          data: {
-            date,
-            startMin,
-            endMin: startMin + appointment.service.durationMin,
-            status: 'CONFIRMADO',
-          },
-          include: { service: true, pet: true, customer: true },
+        const updated = await updateBooking(id, {
+          date,
+          startMin,
+          endMin: startMin + appointment.service.durationMin,
+          status: 'CONFIRMADO',
         })
         return NextResponse.json({ appointment: updated })
       }
@@ -161,7 +134,10 @@ export async function DELETE(
 ) {
   return withAdmin(async () => {
     const { id } = await params
-    await db.appointment.delete({ where: { id } })
+    const removed = await deleteBooking(id)
+    if (!removed) {
+      return NextResponse.json({ error: 'Agendamento não encontrado.' }, { status: 404 })
+    }
     return NextResponse.json({ ok: true })
   })
 }

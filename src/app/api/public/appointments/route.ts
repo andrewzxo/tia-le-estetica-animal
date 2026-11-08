@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { randomUUID } from 'crypto'
 import { db } from '@/lib/db'
 import { computeDayAvailability } from '@/lib/availability'
+import { activeAppointmentsForDate, addBooking } from '@/lib/bookings'
 import { todayISO, minToHHMM, weekdayNamePt, weekdayFromISO, formatDateBR } from '@/lib/time'
 import { buildBookingMessage, waLink } from '@/lib/whatsapp'
 import { SITE_WHATSAPP } from '@/lib/site-url'
@@ -33,8 +35,8 @@ const PAYMENT_LABELS: Record<string, string> = {
 export const TAXI_DOG_PRICE = 10
 
 /** Monta o texto legível da forma de pagamento escolhida no agendamento */
-function buildPaymentInfo(method: string | undefined, needsChange: string | undefined): string {
-  const label = method ? PAYMENT_LABELS[method] : ''
+function buildPaymentInfo(method: string, needsChange: string | undefined): string {
+  const label = PAYMENT_LABELS[method]
   if (!label) return ''
   if (method === 'DINHEIRO') {
     if (needsChange === 'SIM') return 'Dinheiro — precisa de troco'
@@ -45,8 +47,9 @@ function buildPaymentInfo(method: string | undefined, needsChange: string | unde
 }
 
 /**
- * Cria um pedido de agendamento (status PENDENTE).
- * Valida disponibilidade no servidor para impedir conflitos.
+ * Cria um pedido de agendamento (status PENDENTE) com persistência real:
+ * o horário fica OCCUPADO para qualquer pessoa que agendar em seguida.
+ * A forma de pagamento é OBRIGATÓRIA antes de gerar o pedido do WhatsApp.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -83,11 +86,24 @@ export async function POST(req: NextRequest) {
     if (!['PEQUENO', 'MEDIO', 'GRANDE'].includes(size))
       return NextResponse.json({ error: 'Selecione o porte do pet.' }, { status: 400 })
 
-    // ── Forma de pagamento (informada no passo de confirmação) ────
+    // ── Forma de pagamento (OBRIGATÓRIA antes de enviar ao WhatsApp) ──
     const paymentMethod = (body.paymentMethod || '').trim().toUpperCase()
-    if (paymentMethod && !PAYMENT_LABELS[paymentMethod])
+    if (!paymentMethod) {
+      return NextResponse.json(
+        { error: 'Selecione a forma de pagamento para confirmar o agendamento.' },
+        { status: 400 }
+      )
+    }
+    if (!PAYMENT_LABELS[paymentMethod]) {
       return NextResponse.json({ error: 'Forma de pagamento inválida.' }, { status: 400 })
+    }
     const needsChange = (body.needsChange || '').trim().toUpperCase()
+    if (paymentMethod === 'DINHEIRO' && !['SIM', 'NAO'].includes(needsChange)) {
+      return NextResponse.json(
+        { error: 'Informe se será necessário troco.' },
+        { status: 400 }
+      )
+    }
     const paymentInfo = buildPaymentInfo(paymentMethod, needsChange)
 
     // ── Adicional de táxi dog (opcional, escolhido na etapa do serviço) ─
@@ -119,14 +135,11 @@ export async function POST(req: NextRequest) {
     else if (size === 'GRANDE') price = service.largePrice ?? service.basePrice
     if (taxiDog && !service.priceOnConsult) price += TAXI_DOG_PRICE
 
-    // ── Disponibilidade (validação contra conflitos) ──────────────
+    // ── Disponibilidade (validação contra conflitos reais) ────────
     const [workingHours, exceptions, activeAppointments] = await Promise.all([
       db.workingHours.findMany(),
       db.scheduleException.findMany({ where: { date } }),
-      db.appointment.findMany({
-        where: { date, status: { in: ['PENDENTE', 'CONFIRMADO'] } },
-        select: { id: true, startMin: true, endMin: true },
-      }),
+      activeAppointmentsForDate(date),
     ])
 
     const day = computeDayAvailability({
@@ -145,58 +158,64 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // ── Cliente (upsert por telefone) ─────────────────────────────
-    const customer = await db.customer.upsert({
-      where: { phone },
-      create: { name: tutorName, phone },
-      update: { name: tutorName },
-    })
-
-    // ── Pet (reutiliza se mesmo tutor já tiver pet com mesmo nome) ─
-    let pet = await db.pet.findFirst({
-      where: {
-        customerId: customer.id,
-        name: { equals: petName },
-      },
-    })
-    if (!pet) {
-      pet = await db.pet.findFirst({
-        where: { customerId: customer.id, name: petName },
+    // ── Cliente/Pet no banco local (melhor esforço, p/ aba de clientes) ─
+    let customerId = `c_${randomUUID().replace(/-/g, '').slice(0, 12)}`
+    let petId = `p_${randomUUID().replace(/-/g, '').slice(0, 12)}`
+    try {
+      const customer = await db.customer.upsert({
+        where: { phone },
+        create: { name: tutorName, phone },
+        update: { name: tutorName },
       })
+      customerId = customer.id
+      let pet = await db.pet.findFirst({
+        where: { customerId: customer.id, name: { equals: petName } },
+      })
+      if (!pet) {
+        pet = await db.pet.findFirst({
+          where: { customerId: customer.id, name: petName },
+        })
+      }
+      if (pet) {
+        pet = await db.pet.update({
+          where: { id: pet.id },
+          data: { species, breed, size },
+        })
+      } else {
+        pet = await db.pet.create({
+          data: { customerId: customer.id, name: petName, species, breed, size },
+        })
+      }
+      petId = pet.id
+    } catch (err) {
+      // Em ambientes sem SQLite persistente (Vercel), seguimos só com o store
+      console.error('[public/appointments] customer/pet local (best effort):', err)
     }
-    if (pet) {
-      pet = await db.pet.update({
-        where: { id: pet.id },
-        data: { species, breed, size },
-      })
-    } else {
-      pet = await db.pet.create({
-        data: { customerId: customer.id, name: petName, species, breed, size },
-      })
-    }
 
-    // ── Agendamento (PENDENTE até a proprietária confirmar) ───────
-    const appointment = await db.appointment.create({
-      data: {
-        serviceId: service.id,
-        customerId: customer.id,
-        petId: pet.id,
-        date,
-        startMin,
-        endMin: startMin + service.durationMin,
-        price: service.priceOnConsult ? 0 : price,
-        status: 'PENDENTE',
-        petNotes: obs,
-        paymentInfo,
-        taxiDog,
-      },
+    // ── Agendamento no store persistente (PENDENTE até confirmar) ──
+    const appointment = await addBooking({
+      serviceId: service.id,
+      customerId,
+      petId,
+      date,
+      startMin,
+      endMin: startMin + service.durationMin,
+      price: service.priceOnConsult ? 0 : price,
+      status: 'PENDENTE',
+      petNotes: obs,
+      paymentInfo,
+      internalNotes: '',
+      taxiDog,
+      service: { id: service.id, name: service.name, durationMin: service.durationMin },
+      pet: { id: petId, name: petName, species, breed, size },
+      customer: { id: customerId, name: tutorName, phone },
     })
 
     // ── Mensagem do WhatsApp ──────────────────────────────────────
     const settings = await db.siteSettings.findUnique({ where: { id: 'main' } })
     const template =
       settings?.waBookingTemplate ||
-      `🐾 *{negocio}*\n*Novo agendamento pelo site*\n\n*Serviço:* {servico}\n*Data:* {data}\n*Horário:* {horario}\n*Pet:* {pet}\n*Tutor:* {tutor}\n*Telefone:* {telefone}\n*Preço estimado:* {preco}\n*Táxi dog (adicional):* {taxidog}\n*Observações:* {obs}\n\nPoderiam confirmar meu agendamento? Obrigado(a)! 💕`
+      `🐾 *{negocio}*\n*Novo agendamento pelo site*\n\n*Serviço:* {servico}\n*Data:* {data}\n*Horário:* {horario}\n*Pet:* {pet}\n*Tutor:* {tutor}\n*Telefone:* {telefone}\n*Preço estimado:* {preco}\n*Forma de pagamento:* {pagamento}\n*Táxi dog (adicional):* {taxidog}\n*Observações:* {obs}\n\nPoderiam confirmar meu agendamento? Obrigado(a)! 💕`
 
     const message = buildBookingMessage(template, {
       businessName: settings?.businessName || 'Tia Lê Estética Animal',
@@ -211,7 +230,7 @@ export async function POST(req: NextRequest) {
       tutorPhone: maskPhoneBR(phone),
       price: service.priceOnConsult ? null : price,
       obs,
-      paymentLabel: paymentInfo || undefined,
+      paymentLabel: paymentInfo,
       taxiDog,
     })
 

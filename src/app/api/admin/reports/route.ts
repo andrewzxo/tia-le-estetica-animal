@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { withAdmin } from '@/lib/api'
+import { listBookings } from '@/lib/bookings'
 
 /**
  * Relatório financeiro e de desempenho.
@@ -15,16 +16,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Período inválido.' }, { status: 400 })
     }
 
-    const [appointments, newCustomers, totalCustomers] = await Promise.all([
-      db.appointment.findMany({
-        where: { date: { gte: from, lte: to } },
-        include: { service: true },
+    const all = await listBookings()
+    const appointments = all.filter((a) => a.date >= from && a.date <= to)
+
+    const [newCustomers, totalCustomers] = await Promise.all([
+      db.customer.count({
+        where: {
+          createdAt: { gte: new Date(`${from}T03:00:00.000Z`), lte: new Date(`${to}T23:59:59.999Z`) },
+        },
       }),
-      db.customer.count({ where: { createdAt: { gte: new Date(`${from}T03:00:00.000Z`), lte: new Date(`${to}T23:59:59.999Z`) } } }),
       db.customer.count(),
     ])
 
-    const valid = appointments.filter((a) => a.status !== 'RECUSADO')
     const concluded = appointments.filter((a) => a.status === 'CONCLUIDO')
     const confirmed = appointments.filter((a) => a.status === 'CONFIRMADO')
     const pending = appointments.filter((a) => a.status === 'PENDENTE')
@@ -56,7 +59,7 @@ export async function GET(req: NextRequest) {
     const paidCount = concluded.length + confirmed.length
     const avgTicket = paidCount > 0 ? revenueTotal / paidCount : 0
 
-    // Desempenho mensal (buckes por mês dentro do período)
+    // Desempenho mensal (buckets por mês dentro do período)
     const monthMap = new Map<string, { revenue: number; count: number; concluded: number }>()
     for (const a of [...concluded, ...confirmed]) {
       const ym = a.date.slice(0, 7)
