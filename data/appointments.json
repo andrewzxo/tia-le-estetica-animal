@@ -1,3 +1,38 @@
 {
-  "appointments": []
+  "appointments": [
+    {
+      "serviceId": "cmw1dqyxw0008pw3wwo5ka5l8",
+      "customerId": "cmw7yc8xb0000k107n8hsrpjc",
+      "petId": "cmw7yc8xe0002k107lvoqenr6",
+      "date": "2026-11-09",
+      "startMin": 840,
+      "endMin": 900,
+      "price": 50,
+      "status": "PENDENTE",
+      "petNotes": "Rex",
+      "paymentInfo": "PIX",
+      "internalNotes": "",
+      "taxiDog": false,
+      "service": {
+        "id": "cmw1dqyxw0008pw3wwo5ka5l8",
+        "name": "Banho Simples",
+        "durationMin": 60
+      },
+      "pet": {
+        "id": "cmw7yc8xe0002k107lvoqenr6",
+        "name": "Rex",
+        "species": "CAO",
+        "breed": "",
+        "size": "PEQUENO"
+      },
+      "customer": {
+        "id": "cmw7yc8xb0000k107n8hsrpjc",
+        "name": "Maria Teste",
+        "phone": "11999997777"
+      },
+      "id": "bk_6a5873aff1ee40fc9071",
+      "createdAt": "2026-11-08T14:53:06.483Z",
+      "updatedAt": "2026-11-08T14:53:06.483Z"
+    }
+  ]
 }
